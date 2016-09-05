@@ -259,6 +259,38 @@ static int init_func_spi(void)
 }
 #endif
 
+#if defined(CONFIG_ARC)
+union pll_reg {                                                      
+    struct {                                                         
+       unsigned int low:6, high:6, edge:1, bypass:1, noupd:1, pad:17
+    };                                                               
+    unsigned int val;                                                
+};                                                                   
+
+static int init_clk(void)
+{
+    unsigned int f = 33333333;
+    union pll_reg idiv, fbdiv, odiv;
+    idiv.val = readl((void __iomem *)0xF0000000 + 0x80 + 0); 
+    fbdiv.val = readl((void __iomem *)0xF0000000 + 0x80 + 4);
+    odiv.val = readl((void __iomem *)0xF0000000 + 0x80 + 8); 
+    if (idiv.bypass != 1)                     
+        f = f / (idiv.low + idiv.high);       
+                                                  
+    if (fbdiv.bypass != 1)                    
+        f = f * (fbdiv.low + fbdiv.high);     
+                                                      
+    if (odiv.bypass != 1)                     
+        f = f / (odiv.low + odiv.high);       
+                                                          
+    f = (f + 500000) / 1000000; /* Rounding */
+
+    puts("CLK_INIT\n");
+    printf("CLK is %u\n", f);
+	return 0;
+}
+#endif
+
 __maybe_unused
 static int zero_global_data(void)
 {
@@ -1026,6 +1058,9 @@ static init_fnc_t init_sequence_f[] = {
 #if defined(CONFIG_PPC) || defined(CONFIG_M68K)
 	INIT_FUNC_WATCHDOG_RESET
 	setup_board_part2,
+#endif
+#ifdef CONFIG_ARC
+	init_clk,
 #endif
 	display_new_sp,
 #ifdef CONFIG_SYS_EXTBDINFO
