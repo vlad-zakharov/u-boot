@@ -5,6 +5,7 @@
  */
 
 #include <common.h>
+#include <dm.h>
 #include <dwmmc.h>
 #include <malloc.h>
 #include "axs10x.h"
@@ -43,6 +44,35 @@ int board_early_init_f(void)
 		gd->board_type = AXS_MB_V2;
 
 	return 0;
+}
+
+int board_early_init_r(void)
+{
+	struct udevice *dev;
+	struct clk *cpuclk;
+	int ret = 0, freq;
+
+	//Get clock driver device
+	ret = uclass_get_device(UCLASS_CLK, 0, &dev);
+	if(ret < 0)
+	{
+		printf("Error: Unable to get clock device.\n");
+		return -1;
+	}
+
+	ret = clk_request(dev, cpuclk);
+	if(ret < 0)
+	{
+		printf("Error: Unable to get CPU clk.\n");
+		return -1;
+	}
+
+	if((freq = clk_get_rate(cpuclk)) > 0)
+	{
+		printf("CPU frequency is: %d\n", freq);
+	}
+	return 0;
+
 }
 
 #ifdef CONFIG_ISA_ARCV2
