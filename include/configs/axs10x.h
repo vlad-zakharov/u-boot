@@ -39,6 +39,7 @@
  */
 #define CONFIG_BOARD_TYPES
 #define CONFIG_BOARD_EARLY_INIT_F
+#define CONFIG_BOARD_EARLY_INIT_R
 
 /*
  * NAND Flash configuration

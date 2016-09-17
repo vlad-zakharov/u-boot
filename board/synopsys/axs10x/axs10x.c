@@ -5,11 +5,43 @@
  */
 
 #include <common.h>
+#include <dm.h>
 #include <dwmmc.h>
 #include <malloc.h>
 #include "axs10x.h"
 
 DECLARE_GLOBAL_DATA_PTR;
+
+int board_clk_init(ulong rate)
+{
+	struct udevice *dev;
+	struct clk *cpuclk;
+	int ret = 0;
+
+	// Get clock driver device
+	ret = uclass_get_device(UCLASS_CLK, 0, &dev);
+	if(ret < 0)
+	{
+		return -1;
+	}
+	
+	// Get clock
+	ret = clk_request(dev, cpuclk);
+	if(ret < 0)
+	{
+		return -1;
+	}
+
+	// Set clock rate 
+	if((rate = clk_set_rate(cpuclk, rate)) < 0)
+	{
+		return -1;
+	}
+
+	clk_free(cpuclk);
+
+	return rate;
+}
 
 int board_mmc_init(bd_t *bis)
 {
@@ -37,12 +69,43 @@ int board_mmc_init(bd_t *bis)
 
 int board_early_init_f(void)
 {
+	gd->cpu_clk = board_clk_init(CONFIG_SYS_CLK_FREQ);
+
 	if (readl((void __iomem *)AXS_MB_CREG + 0x234) & (1 << 28))
 		gd->board_type = AXS_MB_V3;
 	else
 		gd->board_type = AXS_MB_V2;
 
 	return 0;
+}
+
+int board_early_init_r(void)
+{
+	struct udevice *dev;
+	struct clk *cpuclk;
+	int ret = 0, freq;
+
+	// Get clock driver device
+	ret = uclass_get_device(UCLASS_CLK, 0, &dev);
+	if(ret < 0)
+	{
+		printf("Error: Unable to get clock device.\n");
+	}
+
+	// Get clock
+	ret = clk_request(dev, cpuclk);
+	if(ret < 0)
+	{
+		printf("Error: Unable to get CPU clk.\n");
+	}
+	
+	// Set up clock
+	if((freq = clk_get_rate(cpuclk)) > 0)
+	{
+		printf("CPU frequency is: %d MHz\n", (freq + 500000)/1000000);
+	}
+	return 0;
+
 }
 
 #ifdef CONFIG_ISA_ARCV2
