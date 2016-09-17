@@ -107,6 +107,7 @@
  * Commands still not supported in Kconfig
  */
 #define CONFIG_CMD_NAND
+#define CONFIG_CMD_CLK
 
 #define CONFIG_AUTO_COMPLETE
 #define CONFIG_SYS_MAXARGS		16

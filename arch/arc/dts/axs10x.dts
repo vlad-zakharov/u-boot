@@ -24,10 +24,9 @@
 
 	};
 
-	clock: axc003_clk@F0000000 {
-		compatible = "synopsys,axc003-clk";
-		clock-output-names = "axc003_clk";
-		reg = <0xF0000000 0x1000>;
+	clock: clock {
+		compatible = "snps,axc003-clk";
+		reg = <0xf0000000 0x1000>;
 		u-boot,dm-pre-reloc;
 		#clock-cells = <0>;
 	};

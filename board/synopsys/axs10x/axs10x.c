@@ -12,6 +12,35 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+int board_clk_init(ulong rate)
+{
+	struct udevice *dev;
+	struct clk *cpuclk;
+	int ret = 0;
+
+	//Get clock driver device
+	ret = uclass_get_device(UCLASS_CLK, 0, &dev);
+	if(ret < 0)
+	{
+		return -1;
+	}
+
+	ret = clk_request(dev, cpuclk);
+	if(ret < 0)
+	{
+		return -1;
+	}
+
+	if((rate = clk_set_rate(cpuclk, rate)) < 0)
+	{
+		return -1;
+	}
+
+	clk_free(cpuclk);
+
+	return rate;
+}
+
 int board_mmc_init(bd_t *bis)
 {
 	struct dwmci_host *host = NULL;
@@ -38,6 +67,8 @@ int board_mmc_init(bd_t *bis)
 
 int board_early_init_f(void)
 {
+	gd->cpu_clk = board_clk_init(CONFIG_SYS_CLK_FREQ);
+
 	if (readl((void __iomem *)AXS_MB_CREG + 0x234) & (1 << 28))
 		gd->board_type = AXS_MB_V3;
 	else

@@ -259,7 +259,7 @@ static int init_func_spi(void)
 }
 #endif
 
-#if defined(CONFIG_ARC)
+#if FALSE
 union pll_reg {                                                      
     struct {                                                         
        unsigned int low:6, high:6, edge:1, bypass:1, noupd:1, pad:17
@@ -283,7 +283,7 @@ static int init_clk(void)
     if (odiv.bypass != 1)                     
         f = f / (odiv.low + odiv.high);       
                                                           
-    f = (f + 500000) / 1000000; /* Rounding */
+    f = (f + 500000) 0; /* Rounding */
 
     puts("CLK_INIT\n");
     printf("CLK is %u\n", f);
@@ -1059,9 +1059,9 @@ static init_fnc_t init_sequence_f[] = {
 	INIT_FUNC_WATCHDOG_RESET
 	setup_board_part2,
 #endif
-#ifdef CONFIG_ARC
+/*#ifdef CONFIG_ARC
 	init_clk,
-#endif
+#endif*/
 	display_new_sp,
 #ifdef CONFIG_SYS_EXTBDINFO
 	setup_board_extra,
