@@ -28,6 +28,15 @@ config CLK_BOSTON
 	help
 	  Enable this to support the clocks
 
+config CLK_ARC
+	def_bool y if TARGET_AXS10X
+	depends on CLK
+	select REGMAP
+	select SYSCON
+	help
+	  Enable this to support the clocks on AXS10x Synopsys boards
+
+
 source "drivers/clk/tegra/Kconfig"
 source "drivers/clk/uniphier/Kconfig"
 source "drivers/clk/exynos/Kconfig"
