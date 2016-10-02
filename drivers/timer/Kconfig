@@ -46,4 +46,10 @@ config OMAP_TIMER
 	help
 	  Select this to enable an timer for Omap devices.
 
+config ARC_TIMER
+	bool "ARC timer support"
+	depends on TIMER
+	help
+	  Select this to enable an timer for ARC devices.
+
 endmenu
