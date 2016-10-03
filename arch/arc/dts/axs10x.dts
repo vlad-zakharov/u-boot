@@ -30,6 +30,11 @@
 		u-boot,dm-pre-reloc;
 	};
 
+	timer0: timer0 {
+		compatible = "snps,arc-timer0";
+		clock-frequency = <100000000>;
+	};
+
 	uart0: serial0@e0022000 {
 		compatible = "snps,dw-apb-uart";
 		reg = <0xe0022000 0x1000>;
