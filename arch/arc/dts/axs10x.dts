@@ -23,6 +23,13 @@
 		};
 	};
 
+	core_clk: core_clk@f0000000 {
+			compatible = "snps,axc003-clk";
+			reg = <0xf0000000 0x1000>;
+			u-boot,dm-pre-reloc;
+			#clock-cells = <0>;
+	};
+
 	uart0: serial0@e0022000 {
 		compatible = "snps,dw-apb-uart";
 		reg = <0xe0022000 0x1000>;
