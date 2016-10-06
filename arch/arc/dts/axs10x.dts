@@ -23,9 +23,17 @@
 		};
 	};
 
+	baseclk: baseclk {
+		compatible = "fixed-clock";
+		clock-frequency = <33333333>;
+		#clock-cells = <0>;
+		u-boot,dm-pre-reloc;
+	};
+
 	uart0: serial0@e0022000 {
 		compatible = "snps,dw-apb-uart";
 		reg = <0xe0022000 0x1000>;
+		clocks = <&baseclk>;
 		reg-shift = <2>;
 		reg-io-width = <4>;
 	};
