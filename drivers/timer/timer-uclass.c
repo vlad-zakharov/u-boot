@@ -8,6 +8,7 @@
 #include <dm.h>
 #include <dm/lists.h>
 #include <dm/device-internal.h>
+#include <clk.h>
 #include <errno.h>
 #include <timer.h>
 
@@ -41,10 +42,19 @@ unsigned long notrace timer_get_rate(struct udevice *dev)
 
 static int timer_pre_probe(struct udevice *dev)
 {
+	struct clk *timer_clk;
+	int err;
 	struct timer_dev_priv *uc_priv = dev_get_uclass_priv(dev);
 
-	uc_priv->clock_rate = fdtdec_get_int(gd->fdt_blob, dev->of_offset,
+	err = clk_get_by_index(dev, 0, timer_clk);
+	if(!err) {
+		if((uc_priv->clock_rate = clk_get_rate(timer_clk)) < 0)
+			return uc_priv->clock_rate;
+	}
+	else {
+		uc_priv->clock_rate = fdtdec_get_int(gd->fdt_blob, dev->of_offset,
 					     "clock-frequency", 0);
+	}
 
 	return 0;
 }
